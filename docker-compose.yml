@@ -41,12 +41,13 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./logs:/app/logs
+      - botlogs:/app/logs
     networks: [internal]
 
 volumes:
   pgdata:
   redisdata:
+  botlogs:
 
 networks:
   internal:
