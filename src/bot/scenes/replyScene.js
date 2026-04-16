@@ -1,19 +1,16 @@
 /**
- * @file Reply scene — recipient anonymously replies to an incoming message. Entered
- * with scene state `{messageId}`. We look up the message, resolve sender_hash → user,
- * deliver the reply with the "↩️ They replied" header, leave.
+ * @file Reply scene — recipient anonymously replies to an incoming message via the
+ * `💬 Reply` inline button. Entered with scene state `{messageId}`. Delegates
+ * delivery to `replyCore.deliverReply()` so this flow stays in lock-step with the
+ * swipe-reply handler.
  */
 
 'use strict';
 
 const { Scenes } = require('telegraf');
-const users = require('../../db/queries/users');
 const messages = require('../../db/queries/messages');
-const blocks = require('../../db/queries/blocks');
-const { senderHash } = require('../../utils/hash');
-const { extractContent, deliverCard } = require('../../utils/formatters');
-const { receiveKeyboard, cancelKeyboard } = require('../../utils/keyboards');
-const { isRateLimited } = require('../middlewares/rateLimiter');
+const { cancelKeyboard } = require('../../utils/keyboards');
+const { deliverReply } = require('../../handlers/replyCore');
 const { SCENES } = require('../../utils/constants');
 const logger = require('../../utils/logger');
 
@@ -40,59 +37,21 @@ replyScene.on('message', async (ctx) => {
       return ctx.scene.leave();
     }
 
-    // The *replier* is the recipient of the original message — confirm identity.
-    if (String(original.recipient_id) !== String(ctx.user.id)) {
-      await ctx.reply(ctx.t('reply.gone'));
-      return ctx.scene.leave();
+    const result = await deliverReply(ctx, original);
+    const replyKey = {
+      ok: 'reply.delivered',
+      gone: 'reply.gone',
+      rate_limited: 'compose.rate_limited',
+      blocked: 'compose.failed',
+      unsupported: 'compose.unsupported',
+      error: 'errors.generic',
+    }[result];
+
+    if (result === 'unsupported') {
+      await ctx.reply(ctx.t(replyKey), cancelKeyboard(ctx));
+      return; // stay in scene so they can retry with a valid content type
     }
-
-    const originalSender = await users.findBySenderHash(original.sender_hash);
-    if (!originalSender) {
-      await ctx.reply(ctx.t('reply.gone'));
-      return ctx.scene.leave();
-    }
-
-    const payload = extractContent(ctx.message);
-    if (!payload) {
-      await ctx.reply(ctx.t('compose.unsupported'), cancelKeyboard(ctx));
-      return;
-    }
-
-    if (await isRateLimited(ctx.from.id)) {
-      await ctx.reply(ctx.t('compose.rate_limited'));
-      return ctx.scene.leave();
-    }
-
-    // A reply is itself an anonymous message *from* the recipient *to* the original sender.
-    const myHash = senderHash(ctx.from.id);
-    if (await blocks.isBlocked(originalSender.id, myHash)) {
-      await ctx.reply(ctx.t('compose.failed'));
-      return ctx.scene.leave();
-    }
-
-    const replyMsg = await messages.create({
-      senderHash: myHash,
-      recipientId: originalSender.id,
-      contentType: payload.type,
-      content: payload.content,
-      inReplyTo: original.id,
-    });
-
-    try {
-      await deliverCard(
-        ctx.telegram,
-        Number(originalSender.telegram_id),
-        ctx.t('receive.header_reply'),
-        payload,
-        { reply_markup: receiveKeyboard(ctx, replyMsg.id).reply_markup },
-      );
-    } catch (err) {
-      logger.error({ err: err.message, ctx: 'reply-deliver' });
-      await ctx.reply(ctx.t('compose.failed'));
-      return ctx.scene.leave();
-    }
-
-    await ctx.reply(ctx.t('reply.delivered'));
+    await ctx.reply(ctx.t(replyKey));
     return ctx.scene.leave();
   } catch (err) {
     logger.error({ err: err.message, ctx: 'reply-scene' });

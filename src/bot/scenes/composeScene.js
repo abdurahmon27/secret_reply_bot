@@ -63,16 +63,18 @@ composeScene.on('message', async (ctx) => {
       recipientId: recipient.id,
       contentType: payload.type,
       content: payload.content,
+      senderTgMessageId: ctx.message.message_id,
     });
 
     try {
-      await deliverCard(
+      const deliveredMsgId = await deliverCard(
         ctx.telegram,
         Number(recipient.telegram_id),
         ctx.t('receive.header'),
         payload,
         { reply_markup: receiveKeyboard(ctx, msg.id).reply_markup },
       );
+      await messages.setRecipientTgMessageId(msg.id, deliveredMsgId);
     } catch (sendErr) {
       logger.error({ err: sendErr.message, ctx: 'compose-deliver', recipient: recipient.id });
       await ctx.reply(ctx.t('compose.failed'));

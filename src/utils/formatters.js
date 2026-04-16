@@ -35,41 +35,54 @@ function extractContent(message) {
 
 /**
  * Deliver an anonymous-message payload to a recipient via Telegraf. Sends the header
- * first (with keyboard attached if provided on header), then the body below it quoted
- * via reply_to_message_id so the UI renders a native reply.
+ * first, then the content below it quoted via `reply_to_message_id` so the UI renders
+ * a native reply layout. If `extra.reply_to_message_id` is supplied, the *header* is
+ * threaded against the recipient's original typed message — enabling the "return
+ * reply quotes your original message" UX on bidirectional chains.
  *
  * @param {object} telegram — bot.telegram
  * @param {number} chatId — recipient's telegram_id
  * @param {string} header — localized "💌 Anonymous message:" or similar
  * @param {{type:string, content:object}} payload
- * @param {object} [extra] — telegram sendMessage extra (keyboards, parse_mode)
- * @returns {Promise<void>}
+ * @param {object} [extra] — passed through to the content send (keyboards, parse_mode).
+ *                           `extra.threadToMessageId`, if present, threads the *header*
+ *                           against that message id in the recipient's chat.
+ * @returns {Promise<number>} message_id of the content-card (the swipe-target)
  */
 async function deliverCard(telegram, chatId, header, payload, extra = {}) {
-  const headerMsg = await telegram.sendMessage(chatId, header);
-  const quoteOpts = { reply_to_message_id: headerMsg.message_id, ...extra };
+  const { threadToMessageId, ...contentExtra } = extra;
+  const headerOpts = threadToMessageId
+    ? { reply_parameters: { message_id: threadToMessageId, allow_sending_without_reply: true } }
+    : {};
+  const headerMsg = await telegram.sendMessage(chatId, header, headerOpts);
+  const quoteOpts = {
+    reply_parameters: { message_id: headerMsg.message_id, allow_sending_without_reply: true },
+    ...contentExtra,
+  };
+  let contentMsg;
   switch (payload.type) {
     case CONTENT_TYPES.TEXT:
-      await telegram.sendMessage(chatId, payload.content.text, quoteOpts);
+      contentMsg = await telegram.sendMessage(chatId, payload.content.text, quoteOpts);
       break;
     case CONTENT_TYPES.PHOTO:
-      await telegram.sendPhoto(chatId, payload.content.file_id, {
+      contentMsg = await telegram.sendPhoto(chatId, payload.content.file_id, {
         ...(payload.content.caption ? { caption: payload.content.caption } : {}),
         ...quoteOpts,
       });
       break;
     case CONTENT_TYPES.VOICE:
-      await telegram.sendVoice(chatId, payload.content.file_id, {
+      contentMsg = await telegram.sendVoice(chatId, payload.content.file_id, {
         ...(payload.content.caption ? { caption: payload.content.caption } : {}),
         ...quoteOpts,
       });
       break;
     case CONTENT_TYPES.STICKER:
-      await telegram.sendSticker(chatId, payload.content.file_id, quoteOpts);
+      contentMsg = await telegram.sendSticker(chatId, payload.content.file_id, quoteOpts);
       break;
     default:
       throw new Error(`unknown content type: ${payload.type}`);
   }
+  return contentMsg.message_id;
 }
 
 module.exports = { extractContent, deliverCard };

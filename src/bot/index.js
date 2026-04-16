@@ -22,6 +22,7 @@ const menuCmd = require('../commands/menu');
 const helpCmd = require('../commands/help');
 const adminCmd = require('../commands/admin');
 const callbackQuery = require('../handlers/callbackQuery');
+const swipeReply = require('../handlers/swipeReply');
 const messageFallback = require('../handlers/message');
 const logger = require('../utils/logger');
 
@@ -52,6 +53,9 @@ function buildBot() {
 
   // Inline-button router.
   callbackQuery.register(bot);
+
+  // Native swipe-reply shortcut (must come before menu fallback).
+  swipeReply.register(bot);
 
   // Final fallback.
   messageFallback.register(bot);
