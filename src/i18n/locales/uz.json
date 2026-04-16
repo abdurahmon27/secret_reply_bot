@@ -1,0 +1,76 @@
+{
+  "start": {
+    "welcome_new": "👋 Salom, {name}!\n\nHavolangni ulash — uni ochgan har kim senga anonim xabar yubora oladi.\n\n👉 {link}\n\nUlar sen ekanligingni bilmaydi. Sen ham ularni bilmaysan.",
+    "link_only": "{name}, havolang mana 👇\n{link}",
+    "self_referral": "Bu o'zingning havolang 🙂",
+    "banned": "Siz botda bloklangansiz."
+  },
+  "menu": {
+    "persistent": "Menyu",
+    "title": "Menyu",
+    "my_link": "🔗 Havolam",
+    "settings": "⚙️ Sozlamalar",
+    "help": "❓ Yordam",
+    "back": "⬅️ Orqaga"
+  },
+  "buttons": {
+    "share": "🔗 Havolani ulashish",
+    "copy": "📋 Havolani nusxalash",
+    "reply": "💬 Javob berish",
+    "block": "🚫 Bloklash",
+    "cancel": "Bekor qilish",
+    "confirm": "✅ Tasdiqlash"
+  },
+  "share": {
+    "prefill": "Menga anonim xabar yubor 👇\n{link}"
+  },
+  "compose": {
+    "prompt": "✍️ {name} uchun anonim xabar yoz:",
+    "delivered": "✅ Yuborildi. Ular kim ekanligingni bilishmaydi.",
+    "failed": "❌ Xabarni yetkazib bo'lmadi.",
+    "rate_limited": "Juda tez yuboryapsan — biroz kutib tur.",
+    "unsupported": "Bu turdagi kontent qo'llab-quvvatlanmaydi.",
+    "self": "Bu o'zingning havolang 🙂",
+    "cancelled": "✖ Bekor qilindi."
+  },
+  "receive": {
+    "header": "💌 Anonim xabar:",
+    "header_reply": "↩️ Xabaringga javob berishdi:"
+  },
+  "reply": {
+    "prompt": "✍️ Javobingni yoz — u anonim tarzda yuboriladi:",
+    "delivered": "✅ Javob yuborildi.",
+    "gone": "Bu suhbat endi mavjud emas.",
+    "cancelled": "✖ Bekor qilindi."
+  },
+  "block": {
+    "confirmed": "✅ Bloklandi. Ulardan boshqa xabar kelmaydi."
+  },
+  "settings": {
+    "title": "Tilni tanla:",
+    "changed": "✅ Til yangilandi."
+  },
+  "help": {
+    "body": "Havolangni ulash — uni ochgan har kim senga anonim xabar yubora oladi. Anonim javob berishing yoki bloklashing mumkin. Hech kim birov kimligini bilmaydi."
+  },
+  "errors": {
+    "generic": "Nimadir xato ketdi. Qayta urinib ko'r."
+  },
+  "admin": {
+    "menu": "Admin menyu",
+    "not_admin": "Ruxsat yo'q.",
+    "stats": "📊 Statistika\n\nJami foydalanuvchilar: {total}\nFaol (7 kun): {active7d}\nXabarlar: {messages}\nReferrallar: {referrals}",
+    "broadcast_prompt": "Rassilka uchun xabar yubor (har qanday kontent):",
+    "broadcast_preview": "Yuqorida ko'rib chiqish ☝️\n\n{count} foydalanuvchiga yuborilsinmi?",
+    "broadcast_sending": "📣 {count} foydalanuvchiga yuborilmoqda…",
+    "broadcast_done": "✅ Bajarildi. Yuborildi: {sent}. Xato: {failed}.",
+    "broadcast_cancelled": "✖ Rassilka bekor qilindi.",
+    "ban_usage": "Foydalanish: /ban <telegram_id>",
+    "ban_done": "✅ Foydalanuvchi {id} bloklandi.",
+    "ban_not_found": "Foydalanuvchi {id} topilmadi.",
+    "unban_usage": "Foydalanish: /unban <telegram_id>",
+    "unban_done": "✅ Foydalanuvchi {id} blokdan chiqarildi.",
+    "userinfo_usage": "Foydalanish: /userinfo <telegram_id>",
+    "userinfo": "ID: {id}\nIsm: {name}\nUsername: @{username}\nTil: {language}\nQo'shilgan: {created_at}\nOxirgi faollik: {last_active}\nReferrallar: {referrals}\nOlingan xabarlar: {messages}\nBloklangan: {banned}"
+  }
+}

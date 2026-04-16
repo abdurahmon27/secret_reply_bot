@@ -1,0 +1,57 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy over SSH
+        id: deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd ~/apps/anonbot
+            git fetch --all --prune
+            git reset --hard origin/main
+            docker compose build bot
+            docker compose up -d postgres redis
+            docker compose run --rm bot node src/db/migrate.js
+            docker compose up -d bot
+            docker image prune -f
+
+      - name: Notify admins — success
+        if: success()
+        run: |
+          SHA="${GITHUB_SHA::7}"
+          TS=$(date -u +"%Y-%m-%d %H:%M:%SZ")
+          TEXT="✅ Deploy succeeded — ${SHA} ${TS}"
+          IFS=',' read -ra IDS <<< "${{ secrets.ADMIN_IDS }}"
+          for id in "${IDS[@]}"; do
+            curl -fsS -X POST \
+              "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+              -d "chat_id=${id}" --data-urlencode "text=${TEXT}" > /dev/null || true
+          done
+
+      - name: Notify admins — failure
+        if: failure()
+        run: |
+          SHA="${GITHUB_SHA::7}"
+          TEXT="❌ Deploy FAILED — ${SHA} — check GitHub Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          IFS=',' read -ra IDS <<< "${{ secrets.ADMIN_IDS }}"
+          for id in "${IDS[@]}"; do
+            curl -fsS -X POST \
+              "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+              -d "chat_id=${id}" --data-urlencode "text=${TEXT}" > /dev/null || true
+          done

@@ -1,0 +1,76 @@
+{
+  "start": {
+    "welcome_new": "👋 Hey {name}!\n\nShare your link — anyone who opens it can send you an anonymous message.\n\n👉 {link}\n\nThey won't know it's you. You won't know it's them.",
+    "link_only": "{name}, here's your link 👇\n{link}",
+    "self_referral": "That's your own link 🙂",
+    "banned": "You are banned from this bot."
+  },
+  "menu": {
+    "persistent": "Menu",
+    "title": "Menu",
+    "my_link": "🔗 My Link",
+    "settings": "⚙️ Settings",
+    "help": "❓ Help",
+    "back": "⬅️ Back"
+  },
+  "buttons": {
+    "share": "🔗 Share my link",
+    "copy": "📋 Copy link",
+    "reply": "💬 Reply",
+    "block": "🚫 Block",
+    "cancel": "Cancel",
+    "confirm": "✅ Confirm"
+  },
+  "share": {
+    "prefill": "Send me an anonymous message 👇\n{link}"
+  },
+  "compose": {
+    "prompt": "✍️ Write your anonymous message to {name}:",
+    "delivered": "✅ Delivered. They have no idea who you are.",
+    "failed": "❌ Couldn't deliver your message.",
+    "rate_limited": "You're sending too fast — try again in a moment.",
+    "unsupported": "That type of content isn't supported here.",
+    "self": "That's your own link 🙂",
+    "cancelled": "✖ Cancelled."
+  },
+  "receive": {
+    "header": "💌 Anonymous message:",
+    "header_reply": "↩️ They replied to your message:"
+  },
+  "reply": {
+    "prompt": "✍️ Write your reply — it will be sent anonymously:",
+    "delivered": "✅ Reply delivered.",
+    "gone": "The conversation is no longer reachable.",
+    "cancelled": "✖ Cancelled."
+  },
+  "block": {
+    "confirmed": "✅ Blocked. You won't hear from them again."
+  },
+  "settings": {
+    "title": "Pick your language:",
+    "changed": "✅ Language updated."
+  },
+  "help": {
+    "body": "Share your link — anyone who opens it can send you an anonymous message. You can reply anonymously or block them. Neither side ever knows who the other is."
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again."
+  },
+  "admin": {
+    "menu": "Admin menu",
+    "not_admin": "Not allowed.",
+    "stats": "📊 Stats\n\nTotal users: {total}\nActive (7d): {active7d}\nMessages: {messages}\nReferrals: {referrals}",
+    "broadcast_prompt": "Send the broadcast message (any content type):",
+    "broadcast_preview": "Preview sent above ☝️\n\nSend to {count} users?",
+    "broadcast_sending": "📣 Broadcasting to {count} users…",
+    "broadcast_done": "✅ Done. Sent: {sent}. Failed: {failed}.",
+    "broadcast_cancelled": "✖ Broadcast cancelled.",
+    "ban_usage": "Usage: /ban <telegram_id>",
+    "ban_done": "✅ User {id} banned.",
+    "ban_not_found": "User {id} not found.",
+    "unban_usage": "Usage: /unban <telegram_id>",
+    "unban_done": "✅ User {id} unbanned.",
+    "userinfo_usage": "Usage: /userinfo <telegram_id>",
+    "userinfo": "ID: {id}\nName: {name}\nUsername: @{username}\nLang: {language}\nJoined: {created_at}\nLast active: {last_active}\nReferrals: {referrals}\nMessages received: {messages}\nBanned: {banned}"
+  }
+}
